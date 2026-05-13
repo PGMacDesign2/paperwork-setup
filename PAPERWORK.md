@@ -308,26 +308,34 @@ Below are full templates for the always-generated commands plus the most common 
 ```markdown
 TEMPLATE: .claude/commands/prep.md
 ---
-# /prep [name]
+# /prep [name-or-event]
 
-Prepare {{manager_first_name}} for a 1-on-1.
+The single source of truth for any kind of prep. 1-on-1, recurring meeting, peer sync, leadership check-in. No other command should reinvent prep logic; if you need prep content, call this command.
 
-1. **Find the person.** Search `people/`, `partners/`, `leadership/` for a directory matching `[name]`. If multiple matches, ask which one. If none, offer to run `/new`.
-2. **Read their files.** `profile.md`, the three most recent `one-on-ones.md` entries, `feedback.md`.
+1. **Identify what you're prepping for.**
+   - If the argument matches a directory in `people/`, `partners/`, or `leadership/`, this is a 1-on-1 (or peer / leadership equivalent). Use that person's files.
+   - If the argument matches a slug in `meetings/recurring/` (e.g., `staff-sync`, `weekly-product-review`), this is a recurring meeting. Use that folder's `profile.md` and `log.md`.
+   - If the argument is something else (a calendar event title, a date-time, "today's 2pm"), look it up on {{tool_calendar}} and figure out which case it falls into. If ambiguous, ask.
+   - If nothing matches, offer to run `/new` (for a person) or to create a `meetings/recurring/[slug]/` folder (for a recurring meeting).
+2. **Read context.**
+   - For a person: `profile.md`, three most recent `one-on-ones.md` entries, `feedback.md`.
+   - For a recurring meeting: `meetings/recurring/[slug]/profile.md` and the most recent log entries.
 3. **Pull recent activity (last {{one_on_one_cadence_days}} days).**
-{{#if tool_work_tracker}}   - From {{tool_work_tracker}}: issues touched, status changes, comments. {{tool_work_tracker_integration_call}}{{/if}}
+{{#if tool_work_tracker}}   - From {{tool_work_tracker}}: issues touched, status changes, comments by or about the person or relevant to the meeting topic. {{tool_work_tracker_integration_call}}{{/if}}
 {{#if tool_code_tracker}}   - From {{tool_code_tracker}}: PRs opened, reviewed, merged. {{tool_code_tracker_integration_call}}{{/if}}
-{{#if tool_meeting_recorder}}   - From {{tool_meeting_recorder}}: any transcripts involving this person not yet logged. {{tool_meeting_recorder_integration_call}}{{/if}}
-4. **Score against the success framework.** Read `references/success-framework.md`. Name a pulse: green, yellow, or red, with the actual reason rooted in {{manager_first_name}}'s measurement system.
+{{#if tool_meeting_recorder}}   - From {{tool_meeting_recorder}}: any transcripts involving this person or meeting not yet logged. {{tool_meeting_recorder_integration_call}}{{/if}}
+4. **Score against the success framework (people only).** Read `references/success-framework.md`. Name a pulse: green, yellow, or red, with the actual reason rooted in {{manager_first_name}}'s measurement system. Skip for non-person prep.
 5. **Surface signals.** Cross-reference against `references/signal-framework.md`. Note red or yellow flags from the last few entries.
-6. **List open promises.** Anything {{manager_first_name}} owes them from prior 1-on-1s, marked Open or Done.
-7. **Suggest 3-5 questions.** Pull from `references/question-bank.md`, weighted toward gaps in recent conversations and the person's current growth area.
-8. **Output format.** Short narrative summary, pulse, signals, open promises, suggested questions. Match {{manager_first_name}}'s communication style.
+6. **List open promises.** Anything {{manager_first_name}} owes them (or owes the meeting attendees) from prior entries, marked Open or Done.
+7. **Suggest 3-5 questions or topics.** For 1-on-1s, pull from `references/question-bank.md`, weighted toward gaps in recent conversations and the person's current growth area. For recurring meetings, suggest topics worth raising based on recent activity.
+8. **Output format.** Short narrative summary, pulse (if a person), signals, open promises, suggested questions or topics. Match {{manager_first_name}}'s communication style.
+9. **Save the prep card.** Write the output to `journal/[year]/[YYYY-MM-DD]-prep-[slug].md` where `[slug]` is the person's directory name or the meeting slug. Append if a card already exists for today's prep.
 
-**Adapt for relationship type:**
-- Direct report: focus on growth, blockers, signals.
-- Partner: focus on alignment, friction, shared deliverables.
-- Leadership: focus on strategic context, escalations, ask-and-tell balance.
+**Adapt by relationship type:**
+- Direct report: focus on growth, blockers, signals, open promises.
+- Peer or cross-functional partner: focus on alignment, friction, shared deliverables.
+- Leadership (manager, skip-level): focus on strategic context, escalations, ask-and-tell balance.
+- Recurring meeting: focus on what changed since last time, decisions pending, attendee context.
 ```
 
 ```markdown
@@ -354,7 +362,12 @@ TEMPLATE: .claude/commands/new.md
 Bootstrap a new person's directory.
 
 1. Ask the relationship type if not obvious: direct report, partner, or leadership.
-2. Create the directory: `[type]/[first-last]/` with three files. Use the example-person templates as the structure.
+2. Create the directory: `[type]/[first-last]/` with the full structure:
+   - `profile.md`
+   - `one-on-ones.md`
+   - `feedback.md`
+{{#if formal_reviews}}   - `reviews/` (empty subdirectory; `/review` writes drafts here){{/if}}
+   Use the example-person templates as the structure.
 3. Ask for the basics: title, start date, role context. 30% complete is fine.
 4. If the user named the same person in other people's notes already, surface those references so they don't lose context.
 {{#if has_git}}5. Commit: "add [first-last] ([type])"{{/if}}
@@ -373,6 +386,7 @@ Team health snapshot for {{manager_first_name}}.
 4. **Pulse summary.** For each person, name green/yellow/red using the success framework. Brief reason only.
 5. **Recommend priorities.** Who needs attention first this week, and why.
 6. **Output.** Short. Visual if helpful (a small table). No padding.
+7. **Save the snapshot.** Write the output to `journal/[year]/[YYYY-MM-DD]-health.md` so the dashboard can read it. Overwrite any existing file from today (health is a point-in-time snapshot, not a log).
 ```
 
 ```markdown
@@ -383,13 +397,12 @@ TEMPLATE: .claude/commands/sod.md (conditional: daily bookends)
 Start of day briefing.
 
 1. **Pull today's calendar.** From {{tool_calendar}}.
-2. **For each 1-on-1 on the calendar today,** run `/prep [name]` in parallel. Deliver the prep cards inline.
-3. **For other meetings,** check `meetings/recurring/[slug]/` (if it exists) or pull a quick context note.
-4. **Carry-overs from yesterday.** Read `journal/[year]/[yesterday].md`. Surface anything still open.
-5. **Today's focus.** Ask {{manager_first_name}} for their one priority today if not obvious.
-6. **Write the briefing** to `journal/[year]/[today].md` under a `## SOD` header. Append, never overwrite.
-{{#if has_dashboard}}7. **Refresh the dashboard.** Run the renderer from `dashboard/`.{{/if}}
-{{#if has_git}}8. Commit: "sod [today]"{{/if}}
+2. **For every event on the calendar today,** run `/prep [event]` in parallel. /prep is the single source of truth for any kind of prep (1-on-1, recurring meeting, peer sync, leadership check-in). Don't reinvent it here. Deliver the prep cards inline.
+3. **Carry-overs from yesterday.** Read `journal/[year]/[yesterday].md`. Surface anything still open.
+4. **Today's focus.** Ask {{manager_first_name}} for their one priority today if not obvious.
+5. **Write the briefing** to `journal/[year]/[today].md` under a `## SOD` header. Append, never overwrite. Include today's schedule with links to each prep card (e.g., `[YYYY-MM-DD]-prep-[slug].md`), carry-overs, and the named focus.
+{{#if has_dashboard}}6. **Refresh the dashboard.** Run `python dashboard/render.py`. The dashboard reads from the briefing you just wrote and the prep cards /prep produced.{{/if}}
+{{#if has_git}}7. Commit: "sod [today]"{{/if}}
 ```
 
 ```markdown
@@ -638,72 +651,128 @@ TEMPLATE: people/example-person/feedback.md
 
 Only if they said they want a visual dashboard.
 
-Generate a `dashboard/` directory with three files:
+**Architecture.** The dashboard is a thin presentation layer. It does not compute prep, pulse, or signals on its own. Those are jobs for `/prep`, `/health`, etc. The dashboard reads the markdown files those commands wrote (today's briefing in `journal/`, today's prep cards, today's health snapshot) and renders them as HTML.
 
-**`dashboard/render.py`**: a small Python script that reads from the file system and writes a single `index.html` to the same folder. Keep it simple. Standard library only, no extra dependencies. The user runs `python dashboard/render.py` (or sets up an alias) and opens `dashboard/index.html` in their browser.
+This keeps `/prep` as the single source of truth. If the prep logic changes, only `/prep` changes. The dashboard automatically reflects it.
 
-The dashboard should include the sections they named in the interview. Common picks:
-- **Today's snapshot:** schedule, prep cards summary, any flags for today.
-- **Week snapshot:** what's coming, what's done, open promises.
-- **Team pulse:** each person's green/yellow/red from `/health` logic, last 1-on-1 date.
-- **Output or velocity:** simple counts from `{{tool_work_tracker}}` or `{{tool_code_tracker}}` if they have one. No charts unless they asked for them; a small table is fine.
-- **Signals:** active red and yellow signals across the team.
+**Workflow:**
+1. Manager runs `/sod`. /sod runs /prep for each calendar event, writes the briefing.
+2. (Optionally) Manager runs `/health`. Health snapshot saved to journal.
+3. Manager runs `python dashboard/render.py`. Reads today's journal files, renders HTML.
+4. Manager opens `dashboard/index.html` in browser.
+
+Generate a `dashboard/` directory with three files: `render.py`, `style.css`, and a brief `README.md` explaining the customization story.
 
 ```python
 TEMPLATE: dashboard/render.py
 ---
-"""Minimal dashboard renderer for {{manager_first_name}}'s management system.
+"""Thin dashboard renderer for {{manager_first_name}}'s management system.
 
-Reads from people/, journal/, references/. Writes dashboard/index.html.
+Reads markdown files that /sod, /prep, and /health wrote. Renders them as
+HTML. Does not compute anything on its own. If you want the dashboard to
+show something new, generate it through a command (so it stays in one
+place) and add a section here that reads the resulting file.
+
 Run: python dashboard/render.py
 Then open dashboard/index.html in your browser.
 """
 
 from pathlib import Path
 from datetime import date
+import html
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = Path(__file__).resolve().parent / "index.html"
-STYLE = (Path(__file__).resolve().parent / "style.css").name
+STYLE = "style.css"
 
-# Sections requested by the manager in the interview:
-SECTIONS = [
-    {{dashboard_sections_list}}  # e.g., "today", "week", "team_pulse", "signals"
-]
+
+def read_file(path: Path) -> str:
+    return path.read_text() if path.exists() else ""
+
+
+def section(title: str, body_md: str, empty_note: str = "") -> str:
+    if not body_md.strip():
+        body_md = empty_note or f"No content yet. Run the relevant command, then re-render."
+    return f'<section><h2>{html.escape(title)}</h2><pre>{html.escape(body_md)}</pre></section>'
+
 
 def today_section() -> str:
-    # Read today's journal entry if it exists, surface SOD content.
     today = date.today().isoformat()
-    journal = ROOT / "journal" / today[:4] / f"{today}.md"
-    if not journal.exists():
-        return "<section><h2>Today</h2><p>No journal entry for today yet.</p></section>"
-    return f"<section><h2>Today</h2><pre>{journal.read_text()}</pre></section>"
+    briefing = read_file(ROOT / "journal" / today[:4] / f"{today}.md")
+    return section("Today", briefing, "No briefing yet. Run /sod to generate one.")
+
+
+def prep_cards_section() -> str:
+    today = date.today().isoformat()
+    year_dir = ROOT / "journal" / today[:4]
+    if not year_dir.exists():
+        return section("Prep cards (today)", "", "No prep cards yet. /sod runs /prep for today's calendar.")
+    cards = sorted(year_dir.glob(f"{today}-prep-*.md"))
+    if not cards:
+        return section("Prep cards (today)", "", "No prep cards for today yet.")
+    parts = []
+    for card in cards:
+        slug = card.stem.replace(f"{today}-prep-", "")
+        parts.append(f"<h3>{html.escape(slug)}</h3><pre>{html.escape(card.read_text())}</pre>")
+    return f'<section><h2>Prep cards (today)</h2>{"".join(parts)}</section>'
+
 
 def team_pulse_section() -> str:
-    # Walk people/, surface last-1on1 date and any flags from feedback.md.
-    rows = []
-    for person_dir in sorted((ROOT / "people").iterdir()) if (ROOT / "people").exists() else []:
-        if not person_dir.is_dir() or person_dir.name.startswith("."):
-            continue
-        # Implementation: parse one-on-ones.md for last date, feedback.md for flags.
-        rows.append(f"<tr><td>{person_dir.name}</td><td>...</td><td>...</td></tr>")
-    table = "".join(rows) or "<tr><td colspan='3'>No people yet.</td></tr>"
-    return f"<section><h2>Team pulse</h2><table><tr><th>Name</th><th>Last 1:1</th><th>Pulse</th></tr>{table}</table></section>"
+    today = date.today().isoformat()
+    snapshot = read_file(ROOT / "journal" / today[:4] / f"{today}-health.md")
+    return section("Team pulse", snapshot, "No health snapshot yet. Run /health to generate one.")
 
-# Add more section functions as needed: week_section, signals_section, etc.
+
+# Sections the manager picked in the interview. Add or remove section
+# functions to match.
+SECTIONS = [
+    {{dashboard_sections_list}}  # e.g., today_section, prep_cards_section, team_pulse_section
+]
+
 
 def render() -> str:
-    body = "\\n".join({
-        "today": today_section,
-        "team_pulse": team_pulse_section,
-    }.get(s, lambda: "")() for s in SECTIONS)
-    return f"""<!doctype html>
-<html><head><title>{{manager_first_name}}'s dashboard</title><link rel="stylesheet" href="{STYLE}"></head>
-<body><h1>Paperwork</h1>{body}</body></html>"""
+    body = "\n".join(fn() for fn in SECTIONS)
+    return (
+        '<!doctype html>'
+        f'<html><head><title>Paperwork</title>'
+        f'<link rel="stylesheet" href="{STYLE}"></head>'
+        f'<body><h1>Paperwork</h1>{body}</body></html>'
+    )
+
 
 if __name__ == "__main__":
     OUT.write_text(render())
-    print(f"Wrote {{OUT}}")
+    print(f"Wrote {OUT}")
+```
+
+```markdown
+TEMPLATE: dashboard/README.md
+---
+# Dashboard
+
+`python render.py` writes `index.html`. Open that file in a browser.
+
+The dashboard is intentionally plain. It reads what commands like `/sod`, `/prep`, and `/health` wrote, and surfaces it in one view. It does not compute anything on its own.
+
+## Customization
+
+The default styling is minimal so you can see your data without distraction. If you want a different look:
+- Edit `style.css` directly.
+- Or ask Claude to restyle it. ("Restyle this dashboard with a Notion-inspired aesthetic", "Make it look like a Verge article", etc.)
+- Inspiration sources you can point Claude at: a specific website, a screenshot, a CSS pattern library you like.
+
+## Refresh cycle
+
+The dashboard is a snapshot of what's on disk. Run the commands first, then re-render.
+
+Typical flow:
+1. Morning: run `/sod`. (This also runs `/prep` for each calendar event.)
+2. Anytime: run `/health` for the team snapshot.
+3. Then: `python dashboard/render.py`, refresh the browser.
+
+## Adding a section
+
+Don't compute new things in the renderer. Compute them in a command, save the result to `journal/`, then add a section function here that reads the file. This keeps the dashboard thin and keeps `/prep`, `/health`, etc. as the single sources of truth.
 ```
 
 ```css
@@ -788,6 +857,7 @@ These guide every generation decision:
 6. **Private by default.** This is sensitive people data. Generate appropriate privacy guidelines and remind them.
 7. **No jargon in user-facing text.** They are a manager, not an infra person. Don't say "MCP server", "agent loop", "context window", "tool call" to them. Say "Claude integration", "I checked", "I read".
 8. **No em dashes anywhere.** Period or comma or rewrite. House style.
+9. **One source of truth per concept.** `/prep` owns prep content. `/health` owns the team snapshot. The dashboard and other commands read those outputs, they don't recompute. If two pieces of code generate the same kind of content, one of them is wrong.
 
 ---
 
