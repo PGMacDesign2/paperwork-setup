@@ -755,10 +755,9 @@ The dashboard is intentionally plain. It reads what commands like `/sod`, `/prep
 
 ## Customization
 
-The default styling is minimal so you can see your data without distraction. If you want a different look:
+The default styling is whatever Claude chose. It's intentionally restrained so you can see your data without distraction. If you want a different look:
 - Edit `style.css` directly.
-- Or ask Claude to restyle it. ("Restyle this dashboard with a Notion-inspired aesthetic", "Make it look like a Verge article", etc.)
-- Inspiration sources you can point Claude at: a specific website, a screenshot, a CSS pattern library you like.
+- Or ask Claude to restyle it. ("Make it cleaner", "Restyle with a Notion-inspired aesthetic", "Make it look like a Verge article", "Match this screenshot".) Point Claude at whatever inspiration you've got.
 
 ## Refresh cycle
 
