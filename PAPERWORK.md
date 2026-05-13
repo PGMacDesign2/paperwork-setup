@@ -288,11 +288,10 @@ Bare-bones core set. Generate every "always" command. Generate "conditional" com
 
 **Always generate:**
 
-- `/prep [name-or-event]`: Prepare for any meeting (1-on-1, recurring, peer, leadership)
+- `/prep [name]`: Prepare for a 1-on-1
 - `/think [topic]`: Thinking space, no audience but you
 - `/new [first-last]`: Bootstrap a new person's directory
 - `/health`: Team health snapshot
-- `/prune`: Living-system maintenance. Walks the structure and suggests what to keep, change, or remove.
 
 **Conditional, based on interview answers:**
 
@@ -387,30 +386,6 @@ Team health snapshot for {{manager_first_name}}.
 5. **Recommend priorities.** Who needs attention first this week, and why.
 6. **Output.** Short. Visual if helpful (a small table). No padding.
 7. **Save the snapshot.** Write the output to `journal/[year]/[YYYY-MM-DD]-health.md` so the dashboard can read it. Overwrite any existing file from today (health is a point-in-time snapshot, not a log).
-```
-
-```markdown
-TEMPLATE: .claude/commands/prune.md
----
-# /prune
-
-Living-system maintenance. The system accumulates dead profiles, stale entries, and drift unless someone tends it. /prune is that someone. Run it monthly-ish, or whenever the system feels off.
-
-1. **Walk the directory.** List every subdirectory in `people/`, `partners/`, `leadership/`, and `meetings/recurring/`. For each, note last activity (most recent file modified, or most recent entry inside `one-on-ones.md` / `log.md`).
-2. **Flag candidates for review.**
-   - **Dead profiles:** anyone with no 1-on-1 entries in 90+ days. Did they leave? Move teams? Or did the cadence just slip?
-   - **Empty stubs:** profile.md still at template content, or 0-1 1-on-1 entries after 30+ days. The user probably never finished onboarding the entry.
-   - **Stale recurring meetings:** any `meetings/recurring/[slug]/` with no entries in 60+ days. Meeting cancelled? Renamed?
-   - **Drift in references:** scan `references/question-bank.md`, `signal-framework.md`, `success-framework.md`, `feedback-guide.md` for content that hasn't been touched in 90+ days. Worth re-reading and adjusting.
-   - **Unused commands:** scan `.claude/commands/` against {{manager_first_name}}'s recent journal/eod entries. If a command hasn't been invoked in 60+ days, ask whether to keep it.
-3. **For each candidate, propose an action:**
-   - **Keep.** Still relevant, just hasn't been touched recently.
-   - **Change.** Profile or notes need updating (e.g., role change, new project).
-   - **Remove.** Person left, meeting cancelled, command unused. Move to `archive/[type]/[name]/` rather than deleting outright.
-4. **Confirm each one with {{manager_first_name}}.** Don't auto-archive. The whole point is to surface decisions the system can't make on its own.
-5. **Execute the agreed changes.** Move archived items to `archive/`. Apply updates to anything marked "change".
-6. **Note what was pruned.** Append a one-line summary of changes to today's journal entry under a `## Prune` header.
-{{#if has_git}}7. Commit: "prune [YYYY-MM-DD]: [N kept, M changed, K archived]"{{/if}}
 ```
 
 ```markdown
