@@ -362,12 +362,11 @@ TEMPLATE: .claude/commands/new.md
 Bootstrap a new person's directory.
 
 1. Ask the relationship type if not obvious: direct report, partner, or leadership.
-2. Create the directory: `[type]/[first-last]/` with the full structure:
+2. Create the directory: `[type]/[first-last]/` with three files:
    - `profile.md`
    - `one-on-ones.md`
    - `feedback.md`
-{{#if formal_reviews}}   - `reviews/` (empty subdirectory; `/review` writes drafts here){{/if}}
-   Use the example-person templates as the structure.
+   `/review` will lazily add `reviews.md` to the directory when it first writes a draft. Use the example-person templates as the structure.
 3. Ask for the basics: title, start date, role context. 30% complete is fine.
 4. If the user named the same person in other people's notes already, surface those references so they don't lose context.
 {{#if has_git}}5. Commit: "add [first-last] ([type])"{{/if}}
@@ -496,7 +495,7 @@ Draft a performance review.
 3. **Apply {{manager_first_name}}'s success framework.** Read `references/success-framework.md` and apply the actual stated criteria. Don't substitute a generic rubric.
 4. **Surface patterns.** Strengths repeated across multiple 1-on-1s. Growth areas repeated. Signals that resolved or escalated.
 5. **Draft the review** in {{manager_first_name}}'s voice. Sections: summary, strengths (with examples), growth areas (with examples), {{#if tool_perf_system}}rating against {{tool_perf_system}} rubric, {{/if}}forward-looking notes.
-6. **Save the draft** to `people/[name]/reviews/[YYYY-MM-DD].md`. Don't paste anywhere else.
+6. **Save the draft** to `people/[name]/reviews.md`. Create the file if it doesn't exist yet. Append the draft under a `## [YYYY-MM-DD] [review_cadence] Review` heading; newest entries go at the top. Don't paste the draft anywhere else.
 {{#if has_git}}7. Commit: "review draft for [name]"{{/if}}
 ```
 
