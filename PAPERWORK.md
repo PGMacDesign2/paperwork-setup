@@ -137,6 +137,10 @@ Use `{{placeholder}}` tokens in the templates below as a model for what to subst
 │       └── feedback.md
 ├── journal/                     # Daily thinking, /think and /eod output
 │   └── [current year]/
+├── decisions/                   # Auto-created on first /eod route
+│   └── [current year]/
+├── bragdoc/                     # Auto-created on first /eod route
+│   └── [current year]/
 ├── references/                  # Question banks, frameworks
 │   ├── question-bank.md
 │   ├── signal-framework.md
@@ -678,6 +682,7 @@ New entries go at the top.
 
 **Action items ({{manager_first_name}}'s):**
 - [ ] [What you owe them]
+- [ ] Send Sarah the offer-letter template before Friday
 
 **Notes for next time:**
 - [Threads to pick up]
