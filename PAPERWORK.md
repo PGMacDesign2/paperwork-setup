@@ -292,6 +292,7 @@ Bare-bones core set. Generate every "always" command. Generate "conditional" com
 - `/think [topic]`: Thinking space, no audience but you
 - `/new [first-last]`: Bootstrap a new person's directory
 - `/health`: Team health snapshot
+- `/prune`: Living-system maintenance. Walks the structure and surfaces what to keep, change, or remove. Run monthly-ish.
 
 **Conditional, based on interview answers:**
 
@@ -389,6 +390,38 @@ Team health snapshot for {{manager_first_name}}.
 ```
 
 ```markdown
+TEMPLATE: .claude/commands/prune.md
+---
+# /prune
+
+Living-system maintenance. Every system accumulates dead profiles, stale entries, and drift unless someone tends it. /prune is that someone. Run monthly-ish, or whenever the system feels off.
+
+This command does NOT auto-execute changes. It surfaces recommendations, walks {{manager_first_name}} through them one section at a time, and only acts after explicit per-item approval. Default to "keep". Cost of removing something useful is higher than the cost of leaving it.
+
+1. **Walk relationship directories.** List every subdirectory in `people/`{{#if has_partners}}, `partners/`{{/if}}{{#if has_leadership}}, `leadership/`{{/if}}{{#if records_meetings}}, and `meetings/recurring/`{{/if}}. For each, note last activity (most recent file modified, or most recent dated entry inside `one-on-ones.md` / `log.md`). Bucket:
+   - **Active** (touched in last 30 days)
+   - **Quiet** (31-60 days): consider scheduling time
+   - **Stale** (60+ days): confirm still active relationship
+2. **Flag candidates for review.**
+   - **Stale relationships:** anyone with no 1-on-1 entries in 90+ days. Did they leave, move teams, or did the cadence just slip?
+   - **Empty stubs:** `profile.md` still at template content, or fewer than 2 1-on-1 entries after 30+ days. The directory was probably never finished.
+{{#if records_meetings}}   - **Stale recurring meetings:** any `meetings/recurring/[slug]/` with no entries in 60+ days. Cancelled? Renamed?
+{{/if}}   - **Reference drift:** files in `references/` (`question-bank.md`, `signal-framework.md`, `success-framework.md`, `feedback-guide.md`) untouched in 90+ days. Worth a re-read.
+   - **Stale "keep open" promises:** scan every `one-on-ones.md` for unchecked `- [ ]` items older than 30 days (use the file's git blame or surrounding date heading). These are promises that have been resurfacing through `/sync` and `/eod` without resolution. Surface for explicit drop or re-commitment.
+   - **Unused commands:** scan `.claude/commands/` against {{manager_first_name}}'s recent journal entries. Anything not invoked in 60+ days, ask whether to keep.
+   - **CLAUDE.md drift:** every slash command mentioned in `CLAUDE.md` should exist in `.claude/commands/`, and every directory referenced should exist. Flag mismatches in either direction.
+3. **Walk the findings one section at a time.** Don't dump everything at once. For each candidate, propose one of:
+   - **Keep**: still relevant, no action.
+   - **Change**: profile or notes need updating. {{manager_first_name}} describes the edit; you propose the diff and confirm before applying.
+   - **Archive**: person left, meeting cancelled, command unused. Move to `archive/[type]/[name]/` rather than deleting outright.
+   - **Defer**: revisit at next prune. Logged but no action.
+4. **Confirm each destructive change one more time before executing.** Show the path, ask "archive `path/to/thing`? y/n" as the final gate. Never batch-execute.
+5. **Final summary.** Print: items reviewed, approved (changes made), kept, deferred. Include a list of paths archived or edited.
+6. **Note the prune in today's journal.** Append a `## Prune` section to `journal/[year]/[today].md` summarizing what changed and what was deferred so the next prune can pick up the trail.
+{{#if has_git}}7. Commit if changes were applied: "prune [today]: [N kept, M changed, K archived]". Skip the commit if everything was kept or deferred.{{/if}}
+```
+
+```markdown
 TEMPLATE: .claude/commands/sod.md (conditional: daily bookends)
 ---
 # /sod
@@ -419,8 +452,21 @@ End of day recap.
    - What's still open from today?
    - Anything that surprised you?
    - Anyone you're worried about going into tomorrow?
-4. **Triage open promises.** Walk through anything in today's journal. For each: keep, do now, push to tomorrow, or kill.
-{{#if tool_tasks}}5. **Sync surviving items** to {{tool_tasks}}.{{/if}}
+4. **Inbox walk and route.** Inbox is transient. Destinations are the source of truth. EOD ends with an empty inbox. Read `inbox.md` at the repo root and walk every un-dispositioned item under today's date header. For each, route to one of:
+   - **Person file** (1:1 notes): append to the person's `one-on-ones.md` under "Notes for next time" in the most recent dated entry. Find the person across `people/`{{#if has_partners}}, `partners/`{{/if}}{{#if has_leadership}}, `leadership/`{{/if}}.
+   - **`decisions/[year]/`**: significant decision worth logging. Write to `decisions/[year]/[YYYY-MM-DD]-[slug].md` using the decision template (context, options, decision, rationale, revisit-by).
+   - **`bragdoc/[year]/[YYYY-WXX].md`**: a win to remember. Append under today's date heading. Use the current ISO week number for `WXX`.
+{{#if tool_tasks}}   - **{{tool_tasks}}**: stage as a tracked task. Confirm title + priority before creating, then keep the resulting task ID for the inbox-line note.{{/if}}
+   - **Journal**: just a thought. Append as a bullet under a `## Thinking` section in `journal/[year]/[today].md`.
+   - **Drop**: no longer relevant or already done.
+
+   After routing each item, **delete the inbox line.** Do not leave `(routed → ...)` tombstones; the destination file (or git history) is the audit trail. If a `## YYYY-MM-DD` header has no items left after routing, delete the header block too.
+
+5. **Promise triage.** If today's inbox has a `### Open promises (review)` section (written by `/sync` when it scanned `one-on-ones.md` files for unchecked Jamie-owned items), walk each line. The inbox entry includes a `path:line` reference back to the source file. Four options per item:
+   - **Done**: edit the source line `[ ]` → `[x]` (use the `path:line` to navigate). Then delete the inbox line.
+   - **Keep open**: delete the inbox line, leave the source `[ ]` untouched. The next `/sync` for that person will resurface it. This is the right move when there is no external task tracker; let the resurfacing do the reminding.
+{{#if tool_tasks}}   - **Push to {{tool_tasks}}**: create the task in {{tool_tasks}}, then edit the source line to `[x] (→ {{task_id}})` referencing the new task. Then delete the inbox line.
+{{/if}}   - **Drop**: edit the source line to `[x] (dropped [today])`. Then delete the inbox line.
 6. **Write the recap** to `journal/[year]/[today].md` under a `## EOD` header. Append.
 {{#if has_dashboard}}7. **Refresh the dashboard.**{{/if}}
 {{#if has_git}}8. Commit: "eod [today]"{{/if}}
@@ -438,8 +484,27 @@ Batch process recorded meetings.
    - 1-on-1: find the person, summarize the meeting, prepend to their `one-on-ones.md` with date and structured sections (Discussion, Signals, Action items, Notes for next time). Cross-reference any other names mentioned in the conversation to those people's `feedback.md`.
    - Recurring meeting: write or append to `meetings/recurring/[slug]/log.md`.
    - One-off: write to `meetings/[year]/[YYYY-MM-DD]-[slug].md`.
-3. **Surface "needs your eyes."** After processing, list anything that needs {{manager_first_name}}'s judgment: a flag, an unclear action item, a name they didn't recognize.
-{{#if has_git}}4. Commit: "sync [today]"{{/if}}
+3. **Surface only the slim set into `inbox.md`.** Append a single `## [today] sync output` block to the bottom of `inbox.md`. The inbox is for items that need a human decision. It contains ONLY:
+   - **Candidate action items**: anything {{manager_first_name}} appears to have committed to but hasn't opted into tracking yet.
+   - **Uncertain items**: ambiguous things /sync couldn't auto-resolve (name match failure, owner unclear, etc).
+   - **Open promises** (from step 3a below).
+
+   Feedback notes and signal flags are written through to the destination file directly (the person's `feedback.md` and `one-on-ones.md`). They are NOT mirrored into `inbox.md`. If {{manager_first_name}} wants to verify what was auto-written, they read the destination file.
+
+   If all three sub-sections would be empty, skip writing the block entirely.
+
+3a. **Scan for open promises.** For each person whose 1-on-1 was processed today, scan their `one-on-ones.md` for unchecked Jamie-owned items: `- [ ] [Jamie] ...` lines, lines under a `**{{manager_first_name}}'s commitments:**` heading, or generic `- [ ]` lines whose surrounding context implies {{manager_first_name}} owns them. Skip lines clearly owned by others.
+
+   Append every match to today's inbox block under a `### Open promises (review)` heading, one per line, in the format:
+
+   ```
+   - ([person]) [verbatim line]. `path/to/one-on-ones.md:LINE`
+   ```
+
+   The `path:line` reference lets `/eod` navigate back to the source so it can edit the checkbox in place. If no matches, omit the heading.
+
+4. **Surface "needs your eyes" inline.** After processing, also list in chat anything that needs {{manager_first_name}}'s judgment right now: a flag, an unclear action item, a name they didn't recognize. The inbox block is the durable safety net; this is the immediate prompt.
+{{#if has_git}}5. Commit: "sync [today]"{{/if}}
 ```
 
 ```markdown
@@ -582,24 +647,12 @@ TEMPLATE: people/example-person/profile.md
 {{#if tool_work_tracker}}**{{tool_work_tracker}} handle:** sarah.chen{{/if}}
 {{#if tool_code_tracker}}**{{tool_code_tracker}} handle:** sarahchen{{/if}}
 
-## Context
-Joined from a previous role at a similar-stage company. Currently leading {{example_project}}. Mentors two newer team members informally.
-
-## Working Style
-Prefers async for status, sync for decisions. Reads thoroughly before meeting. Sharp on craft; less practiced at saying no to scope creep.
-
-## Strengths
-- Diagnoses problems faster than most
-- Strong written communicator
-- Trusted by newer team members as a go-to
-
-## Growth Areas
-- Pushing back on scope when partners ask
-- Visibility outside the immediate team
-
 ## Notes
-Recently moved cities. Cares about thoughtful work culture. Gets quiet when something is shipping that she doesn't agree with. Worth noticing.
+
+Free-form. Working style, strengths, growth areas, personal context, projects, anything worth remembering. No required structure. The file fills in naturally as 1-on-1s accumulate. 30% complete at creation time is fine.
 ```
+
+Don't generate `2026-plan.md`, `goals.md`, or any other yearly aspirational template per person. Profile + one-on-ones + feedback is the whole kit. If a manager wants per-person planning artifacts later, they can add them by hand.
 
 ```markdown
 TEMPLATE: people/example-person/one-on-ones.md
