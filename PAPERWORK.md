@@ -15,9 +15,10 @@ You are an AI coding agent that just fetched this file. Your job is to interview
 **Time budget:** roughly 15-20 minutes for the conversation. Generation is fast once the answers are in.
 
 **Posture during the interview:**
-- Be conversational. This is not a form. Group questions naturally. Skip ones that don't apply based on what they've already said.
-- Dig in when an answer is interesting or vague. The depth here drives the quality of every generated file.
-- Don't ask all questions at once. One topic at a time.
+- Be conversational. This is not a form.
+- **One question at a time. Never batch.** Don't drop three questions in a single message and ask the user to answer them all. Ask one, wait for the answer, then ask the next. Even short answers deserve their own turn so the user can think clearly about each one.
+- **Give a heads-up at the start of each Part.** Before the first question of a section, tell the user roughly how many questions are coming in that section so they know there's an end in sight. Example: "Alright, Part 1 is about your world. Roughly 8 questions, and I'll hit you one at a time." Skip a question if a previous answer already covered it, and update the count if you do.
+- Dig in when an answer is interesting or vague. The depth here drives the quality of every generated file. A follow-up counts as its own question and doesn't need to be pre-announced.
 - If the user asks "what do you mean by X?", explain in plain language. They're a manager, not an infra person. Avoid jargon like "MCP server", "agent loop", "context window" in anything you say to them.
 - If the user wants to skip a section, skip it. The interview is a guide, not a contract.
 
