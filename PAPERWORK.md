@@ -64,8 +64,8 @@ Understand their ecosystem so the system integrates naturally. For each, name th
 Use plain language. Don't say "MCP server" unprompted. Say "Claude integration" or "automatic connection" if you need to explain.
 
 - **Calendar.** Google, Apple, Outlook, something else, or none?
-- **Notes or personal knowledge.** Notion, Obsidian, Apple Notes, Roam, paper, Google Docs or Drive, a GitHub repo, scattered, or nothing?
-- **Personal tasks.** Things, Todoist, TickTick, Apple Reminders, paper, or nothing formal?
+- **Notes or personal knowledge.** Notion, Obsidian, Apple Notes, Roam, paper, Google Docs or Drive, a GitHub repo, scattered, or nothing? If they don't have a system they love, suggest using this repo itself as their notes store. The `journal/` directory and free-form markdown files handle daily thinking, references, and longer-form notes naturally, and everything stays alongside the team context.
+- **Personal tasks.** Things, Todoist, TickTick, Apple Reminders, paper, or nothing formal? If they don't have something they love (or they're a Linear shop already), suggest a Linear team for personal tasks. A private team they own keeps tasks in the same tool as work tracking, and the `/eod` inbox can route action items straight there.
 - **Team work tracking.** Linear, Jira, GitHub Issues or Projects, Asana, Basecamp, Trello, Notion, ClickUp, Monday, Shortcut, or nothing formal?
 - **Code or repo tracking.** GitHub, GitLab, Bitbucket, Azure DevOps, or none (non-engineering team)?
 - **Meeting recording.** Granola, Otter, Fireflies, Fathom, Zoom built-in, Loom for async, manual notes, or nothing?
