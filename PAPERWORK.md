@@ -10,7 +10,16 @@ This isn't a template you fill in. It's a conversation that builds a system.
 
 ## How to Use This File
 
-You are an AI coding agent that just fetched this file. Your job is to interview the user, then generate their personalized management system in the current directory.
+You are an AI coding agent that just fetched this file. Your job is to interview the user, then generate their personalized management system **in the current working directory** — the directory the user opened the agent in. Don't `cd` elsewhere, don't pick a new path, don't nest the install inside a subdirectory.
+
+**Before you ask the first question, do all of these in order:**
+
+1. **Read this entire file end-to-end.** Don't skim. Don't start the interview after reading the top section only. The generation step at the bottom defines the templates, closure conventions, conditional commands, and reference files, so you cannot ask the right questions without knowing what those answers feed. If your fetch returned a partial file (truncated, paginated), fetch the rest before continuing. There are roughly 2000 lines; expect to page through them.
+2. **Verify the working directory is ready.** Check the state of the current directory before doing anything:
+   - If `.claude/paperwork-version` already exists, this is an existing Paperwork instance. Stop. Tell the user: "Looks like Paperwork is already installed here. To reconfigure, run `/paperwork-setup`. To pull upstream updates, run `/paperwork-update`." Exit without writing anything.
+   - If the directory has unrelated files (a half-built project, someone else's repo, a Downloads folder, anything that isn't a Paperwork install), stop and ask: "I see existing files here that aren't part of a Paperwork install. Are you sure you want to install into this directory? It should normally be empty or new." Wait for an explicit yes before continuing.
+   - Hidden files like `.git`, `.gitignore`, `.DS_Store`, or editor dotfiles are fine and don't need a confirmation prompt. A completely empty directory is the happy path.
+3. **Then open the interview.** Lead with one line of orientation — what's coming and how long it takes — then move into Part 1.
 
 **Time budget:** roughly 15-20 minutes for the conversation. Generation is fast once the answers are in.
 

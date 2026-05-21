@@ -17,13 +17,7 @@ If you have no direct reports yet, or you want a tool that manages your people f
 Open your AI coding agent in an empty directory where you want the system to live. Paste this prompt:
 
 ```
-Set up my personal management system using Paperwork Setup. Begin by fetching
-this URL and reading it completely:
-
-https://raw.githubusercontent.com/nobodyiscertain/paperwork-setup/main/PAPERWORK.md
-
-Then follow the instructions inside, starting with the interview. Build the
-system in the current directory.
+Set up Paperwork for me. Read https://raw.githubusercontent.com/nobodyiscertain/paperwork-setup/main/PAPERWORK.md and follow the instructions there.
 ```
 
 Run the wizard. It interviews you. Fifteen to twenty minutes. Done.
