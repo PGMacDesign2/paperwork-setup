@@ -10,7 +10,7 @@ This isn't a template you fill in. It's a conversation that builds a system.
 
 ## How to Use This File
 
-You are an AI coding agent that just fetched this file. Your job is to interview the user, then generate their personalized management system **in the current working directory** — the directory the user opened the agent in. Don't `cd` elsewhere, don't pick a new path, don't nest the install inside a subdirectory.
+You are an AI coding agent that just fetched this file. Your job is to interview the user, then generate their personalized management system **in the current working directory** (the directory the user opened the agent in). Don't `cd` elsewhere, don't pick a new path, don't nest the install inside a subdirectory.
 
 **Before you ask the first question, do all of these in order:**
 
@@ -19,7 +19,7 @@ You are an AI coding agent that just fetched this file. Your job is to interview
    - If `.claude/paperwork-version` already exists, this is an existing Paperwork instance. Stop. Tell the user: "Looks like Paperwork is already installed here. To reconfigure, run `/paperwork-setup`. To pull upstream updates, run `/paperwork-update`." Exit without writing anything.
    - If the directory has unrelated files (a half-built project, someone else's repo, a Downloads folder, anything that isn't a Paperwork install), stop and ask: "I see existing files here that aren't part of a Paperwork install. Are you sure you want to install into this directory? It should normally be empty or new." Wait for an explicit yes before continuing.
    - Hidden files like `.git`, `.gitignore`, `.DS_Store`, or editor dotfiles are fine and don't need a confirmation prompt. A completely empty directory is the happy path.
-3. **Then open the interview.** Lead with one line of orientation — what's coming and how long it takes — then move into Part 1.
+3. **Then open the interview.** Lead with one line of orientation (what's coming and how long it takes), then move into Part 1.
 
 **Time budget:** roughly 15-20 minutes for the conversation. Generation is fast once the answers are in.
 
@@ -68,9 +68,9 @@ Understand their cadence and rituals.
 
 ### Part 3: Your Tools
 
-Understand their ecosystem so the system integrates naturally. For each, name the tool, then note if they want the system to reference it directly. Most tools have a Claude Code MCP server or CLI wrapper available, but the system also works without one (commands fall back to manual prompts).
+Understand their ecosystem so the system integrates naturally. For each, name the tool, then note if they want the system to reference it directly. Most tools have an agent integration or CLI wrapper available, but the system also works without one (commands fall back to manual prompts).
 
-Use plain language. Don't say "MCP server" unprompted. Say "Claude integration" or "automatic connection" if you need to explain.
+Use plain language. Don't say "MCP server" unprompted. Say "agent integration" or "automatic connection" if you need to explain.
 
 - **Calendar.** Google, Apple, Outlook, something else, or none?
 - **Notes or personal knowledge.** Notion, Obsidian, Apple Notes, Roam, paper, Google Docs or Drive, a GitHub repo, scattered, or nothing? If they don't have a system they love, suggest using this repo itself as their notes store. The `journal/` directory and free-form markdown files handle daily thinking, references, and longer-form notes naturally, and everything stays alongside the team context.
@@ -82,7 +82,7 @@ Use plain language. Don't say "MCP server" unprompted. Say "Claude integration" 
 - **Performance or HR system.** Lattice, 15Five, CultureAmp, Workday, BambooHR, a spreadsheet, or nothing formal?
 - Anything else that's part of your daily work?
 
-For each tool they name, note whether they already have a Claude integration installed, want one wired up, or would rather leave it as a manual reference for now. Don't push for connections they aren't asking for.
+For each tool they name, note whether they already have an agent integration installed, want one wired up, or would rather leave it as a manual reference for now. Don't push for connections they aren't asking for.
 
 ### Part 4: Your Philosophy
 
@@ -270,7 +270,7 @@ Any slash command that resolves, drops, or closes something MUST append the appr
 {{#if tool_perf_system}}| Perf / HR | {{tool_perf_system}} | {{tool_perf_system_integration}} |{{/if}}
 
 For each row, the "How to Reach It" cell is one of:
-- A specific Claude integration the user said they have wired up, with a one-line note on what it exposes
+- A specific agent integration the user said they have wired up, with a one-line note on what it exposes
 - A CLI command pattern you can call
 - "Manual reference only", meaning you point the user to the tool, you don't read from it directly
 
@@ -295,7 +295,7 @@ If no mode is named, default to a thoughtful copilot: ask before assuming, give 
 
 When drafting prep notes, reviews, or summaries, match {{manager_first_name}}'s communication style ({{comm_style}}). Don't over-format. Bullets and short paragraphs beat headers-and-tables. Raw beats polished. No corporate language. No em dashes.
 
-When messaging the user, never use internal terms like "MCP server", "agent loop", "context window", "tool call". They are a manager, not an infra person. Say "Claude integration", "I checked", "I read".
+When messaging the user, never use internal terms like "MCP server", "agent loop", "context window", "tool call". They are a manager, not an infra person. Say "agent integration", "I checked", "I read".
 
 ## Privacy
 
@@ -408,7 +408,7 @@ Bootstrap a new person's directory. Works interactively for one person, or non-i
 
    ## Notes
 
-   Free-form. Working style, strengths, growth areas, personal context, projects, anything worth remembering. No required structure. The file fills in naturally as 1-on-1s accumulate. 30% complete at creation time is fine.
+   Working style, strengths, growth areas, projects, anything worth remembering. Tell your agent what you know and they fill this in; it grows as 1-on-1s accumulate. 30% complete at creation time is fine.
    ```
 
    `one-on-ones.md`:
@@ -867,13 +867,11 @@ TEMPLATE: library/README.md
 ---
 # Library
 
-This is your library. Drop any markdown doc you want to come back to: research notes, frameworks, redlines, ladders, a writeup you keep re-reading.
+This is where your agent stashes docs you want to come back to: research, frameworks, redlines, ladders, that writeup you keep re-reading.
 
-Each file in this directory shows up as a card on the dashboard. The card title is the doc's H1; the preview is the first paragraph. Click a card to read the full doc inline.
+You don't manage this folder. Tell your agent "save this to the library" or "drop the [X] framework," and they handle the file, the title, and the cleanup. Dropping a file in by hand works too if it's easier, but you shouldn't have to.
 
-There's no required structure. One doc per file, free-form markdown. Newest-first sorting is not a thing; the order is alphabetical by filename.
-
-When something stops being useful, delete it. When something needs a closure marker (a redline you're done iterating on, a framework you've moved past), use the canonical markup from `CLAUDE.md`: `(resolved YYYY-MM-DD: reason)`, `(dropped YYYY-MM-DD: reason)`, or `(closed YYYY-MM-DD: reason)`.
+Each doc shows up as a card on the dashboard, titled by its H1 and previewed by the first paragraph. Click a card to read the full doc inline.
 ```
 
 The starter doc itself becomes the first library card on first render, so the manager sees the feature without needing to add anything.
@@ -1369,15 +1367,15 @@ The dashboard reads what commands like `/sod`, `/prep`, and `/health` wrote, and
 - Top bar with the Paperwork mark on the left and today's date on the right.
 - A hero block with a Verge-style day label (e.g., "Friday, May 16.") and a one-line lede explaining what the page is.
 - Section cards, each with a colored stripe at the top (mint, ultraviolet, coral, yellow) and the rendered markdown wrapped in a card.
-- A Library section with one card per markdown file in `library/`. Click a card to open the rendered doc inline. Drop new files into `library/` and re-render to surface them.
+- A Library section with one card per markdown file in `library/`. Click a card to open the rendered doc inline. Tell your agent to save a doc to your library and they'll handle the file plus re-render.
 
 The color palette and editorial type are lifted from the [paperwork](https://github.com/nobodyiscertain/paperwork) design system.
 
 ## Customization
 
 If you want a different look:
-- Edit `style.css` directly. Colors live in `:root` at the top; tweak `--acid-mint`, `--ultraviolet`, etc., to recolor everything in one place.
-- Or ask Claude to restyle it. ("Make it cleaner", "Restyle with a Notion-inspired aesthetic", "Match this screenshot".) Point Claude at whatever inspiration you've got.
+- Ask your agent to restyle it. ("Make it cleaner", "Restyle with a Notion-inspired aesthetic", "Match this screenshot.") Point them at whatever inspiration you've got.
+- Or edit `style.css` directly. Colors live in `:root` at the top; tweak `--acid-mint`, `--ultraviolet`, etc., to recolor everything in one place.
 
 ## Refresh cycle
 
@@ -1390,7 +1388,7 @@ Typical flow:
 
 ## Adding a section
 
-Don't compute new things in the renderer. Compute them in a command, save the result to `journal/`, then add a section function here that reads the file. This keeps the dashboard thin and keeps `/prep`, `/health`, etc. as the single sources of truth.
+Tell your agent what you want to see and they'll wire it up the right way: a command writes a file to `journal/`, the dashboard reads it. The renderer never computes anything on its own, which keeps `/prep`, `/health`, etc. as the single sources of truth.
 ```
 
 ```css
@@ -1813,7 +1811,7 @@ tr:last-child td { border-bottom: none; }
 }
 ```
 
-Tune the sections list to what they named. If they didn't name "team pulse", drop the team_pulse function. Keep the dashboard small. They can ask Claude to extend it later.
+Tune the sections list to what they named. If they didn't name "team pulse", drop the team_pulse function. Keep the dashboard small. They can ask their agent to extend it later.
 
 **Library section.** Include `library_section` in `SECTIONS` whenever the install seeds a `library/` directory (always, per Step 1). The Python code enumerates `library/*.md` at render time, pulls each doc's H1 as the card title and the first paragraph as a preview, and stashes the raw markdown into hidden `<script type="text/markdown">` tags in the rendered HTML. Clicking a card opens an overlay; a small inline JS block calls `marked.parse()` on the stashed markdown and drops the HTML into the overlay. This avoids a `fetch()` call (which fails under `file://` for cross-origin reasons) and keeps `dashboard/index.html` a single static file that works when opened directly from disk. The only external request is the `marked.min.js` script tag pointed at jsDelivr. If the manager wants a fully offline dashboard, they can save `marked.min.js` next to `index.html` and swap the `<script src>` to a local path.
 
@@ -1853,7 +1851,7 @@ TEMPLATE: README.md
 
 Your personal management system. Installed from [paperwork-setup](https://github.com/nobodyiscertain/paperwork-setup) on {{install_date_ct}} at commit [`{{install_sha_short}}`](https://github.com/nobodyiscertain/paperwork-setup/commit/{{install_sha}}).
 
-Claude is your copilot for managing {{report_count}} direct reports{{#if has_partners}} and {{partner_count}} cross-functional relationships{{/if}}. The agent reads `CLAUDE.md` every session and works through the slash commands in `.claude/commands/`. This file is for you, not the agent.
+Your agent is your copilot for managing {{report_count}} direct reports{{#if has_partners}} and {{partner_count}} cross-functional relationships{{/if}}. The agent reads `CLAUDE.md` every session and works through the slash commands in `.claude/commands/`. This file is for you, not the agent.
 
 ## What's in here
 
@@ -1875,7 +1873,7 @@ Claude is your copilot for managing {{report_count}} direct reports{{#if has_par
 
 ## Slash commands
 
-You talk to Claude. Claude routes. These are the named entry points you have today.
+You talk to your agent. The agent routes. These are the named entry points you have today.
 
 {{installed_commands_list}}
 
@@ -1885,11 +1883,11 @@ You can add or remove commands later by re-running `/paperwork-setup`.
 
 You don't have to do all of this. Pick what's useful.
 
-1. **Today (5 minutes).** Open `CLAUDE.md` and skim it. If anything misrepresents how you actually manage, edit it. Claude reads this file every session, so the truer it is, the better the prep gets.
+1. **Today (5 minutes).** Skim `CLAUDE.md`. If anything misrepresents how you actually manage, tell your agent and they'll fix it. Your agent reads this file every session, so the truer it is, the better the prep gets.
 2. **Before your next 1-on-1.** Run `/new [first-last]` for the report you're about to meet with. The agent asks the basics, builds the folder, surfaces anything already captured about that name in other notes. Repeat for your other reports as you go (or do them all at once with a paste-list when you have ten minutes).
 {{#if has_dashboard}}3. **Take the dashboard for a spin (optional).** Run the dashboard renderer (see `dashboard/README.md`) and open `dashboard/index.html`. Bookmark it.
 {{/if}}4. **After each 1-on-1.** Either let `/sync` pick it up automatically (if you record meetings) or run `/log [name]`. Don't worry about format. The system makes sense over time.
-5. **End of the first week.** Run `/health` and see if it surfaces anything useful. If it doesn't, edit `context/signal-framework.md` to match what you actually watch for, then try again.
+5. **End of the first week.** Run `/health` and see if it surfaces anything useful. If it doesn't, tell your agent what you actually watch for and they'll update `context/signal-framework.md`. Run it again.
 
 ## Integrations
 
@@ -1918,7 +1916,7 @@ This README is yours. `/paperwork-update` won't overwrite it.
 
 ## Privacy
 
-This repo contains real notes on real people. Don't paste names or notes into web tools, shared chats, or screenshots. If a thread is sensitive enough that the person wouldn't want a peer to read it, mark the entry `(sensitive)` and Claude will skip it on team-wide summaries.
+This repo contains real notes on real people. Don't paste names or notes into web tools, shared chats, or screenshots. If a thread is sensitive enough that the person wouldn't want a peer to read it, tell your agent and they'll mark it `(sensitive)` and skip it on team-wide summaries.
 ````
 
 After substitution, write the rendered content to `README.md` at the root of the user's instance. Don't ship literal `{{` tokens.
@@ -1935,14 +1933,14 @@ For each tool, generate a section with:
 
 **Starter set (hardcode these exactly):**
 
-- **Granola** (meeting recording): "Set it up: install the Granola Claude integration from `https://github.com/granolaai/granola-mcp`. Once wired, `/sync` pulls transcripts directly. Without it, paste transcripts manually when running `/sync`."
-- **Datadog** (observability): "Set it up: the Datadog MCP server lives at `https://github.com/DataDog/dd-mcp-server`. Auth uses a Datadog API key; instructions are in the repo README. Once wired, you can ask the agent about service health, recent incidents, and dashboards inline."
-- **Linear** (work tracking): "Set it up: Linear's MCP server is at `https://mcp.linear.app/sse`. Add it to your agent's MCP config and authenticate through Linear's OAuth flow. Once wired, `/prep` and `/weekly` pull issues, status changes, and comments touching a person automatically."
-- **GitHub** (code tracking): "Set it up: the official GitHub MCP server is at `https://github.com/github/github-mcp-server`. Auth is a personal access token or GitHub App install. Once wired, `/prep` pulls PR activity per person and `/weekly` pulls merged PRs across the team."
-- **Google Calendar** (calendar): "Set it up: the Google Calendar MCP server is at `https://github.com/GongRzhe/Calendar-MCP-Server`. Auth runs through Google OAuth on first call. Once wired, `/sod` reads today's events and `/prep [event]` resolves natural-language event lookups."
-- **Slack** (team communication): "Set it up: Slack's official MCP server is at `https://github.com/modelcontextprotocol/servers/tree/main/src/slack`. Auth is a Slack bot token from a workspace app. Once wired, the agent can post weekly updates as a draft and read recent messages in named channels when you ask."
+- **Granola** (meeting recording): "Set it up: install the Granola agent integration from `https://github.com/granolaai/granola-mcp`. Once wired, `/sync` pulls transcripts directly. Without it, paste transcripts manually when running `/sync`."
+- **Datadog** (observability): "Set it up: Datadog's agent integration lives at `https://github.com/DataDog/dd-mcp-server`. Auth uses a Datadog API key; instructions are in the repo README. Once wired, you can ask your agent about service health, recent incidents, and dashboards inline."
+- **Linear** (work tracking): "Set it up: Linear's agent integration is at `https://mcp.linear.app/sse`. Add it to your agent's config and authenticate through Linear's OAuth flow. Once wired, `/prep` and `/weekly` pull issues, status changes, and comments touching a person automatically."
+- **GitHub** (code tracking): "Set it up: the official GitHub agent integration is at `https://github.com/github/github-mcp-server`. Auth is a personal access token or GitHub App install. Once wired, `/prep` pulls PR activity per person and `/weekly` pulls merged PRs across the team."
+- **Google Calendar** (calendar): "Set it up: the Google Calendar agent integration is at `https://github.com/GongRzhe/Calendar-MCP-Server`. Auth runs through Google OAuth on first call. Once wired, `/sod` reads today's events and `/prep [event]` resolves natural-language event lookups."
+- **Slack** (team communication): "Set it up: Slack's official agent integration is at `https://github.com/modelcontextprotocol/servers/tree/main/src/slack`. Auth is a Slack bot token from a workspace app. Once wired, your agent can post weekly updates as a draft and read recent messages in named channels when you ask."
 
-**Generic fallback** for any tool not in the starter set: "Set it up: search `https://github.com/modelcontextprotocol/servers` and the broader MCP ecosystem for a `{{tool_name}}` server. If none exists, the agent will fall back to manual prompts (it will ask you for the data it needs when a command runs). Tell me if you wire one up and I'll add the call to the relevant command in `CLAUDE.md`."
+**Generic fallback** for any tool not in the starter set: "Set it up: search `https://github.com/modelcontextprotocol/servers` and the broader integration ecosystem for a `{{tool_name}}` server. If none exists, your agent will fall back to manual prompts (it will ask you for the data it needs when a command runs). Tell me if you wire one up and I'll add the call to the relevant command in `CLAUDE.md`."
 
 **File layout.** Open the file with a one-paragraph "what this is" preamble, then a "Wired up" section (tools the manager said are already connected), then a "Not yet wired" section (tools they named but said they want to leave manual or wire later). Group accordingly based on their Part 3 answers. If they said "no calendar" or "no meeting recorder" for a row, skip that row entirely.
 
@@ -2008,7 +2006,7 @@ Built.
 Three things to do next:
 1. Connect your stack. Anything you said you wanted wired up lives in `context/integrations.md` with the setup link. Wire what you'll use this week, skip the rest.
 2. Run `/sod` tomorrow morning. The system reads `CLAUDE.md` and runs from there.
-{{#if has_dashboard}}3. The dashboard is open in your browser. Bookmark it.{{else}}3. Open `CLAUDE.md` and skim it. If anything misrepresents how you actually manage, edit it; the agent reads this file every session.{{/if}}
+{{#if has_dashboard}}3. The dashboard is open in your browser. Bookmark it.{{else}}3. Skim `CLAUDE.md`. If anything misrepresents how you actually manage, tell your agent and they'll fix it; the agent reads this file every session.{{/if}}
 
 Have fun.
 ```
@@ -2035,9 +2033,10 @@ These guide every generation decision:
 4. **Raw over polished.** Notes and logs should be fast to capture, not pretty to read. Speed of capture beats formatting.
 5. **Humans over process.** The system exists to free up time for the hard, human parts of management. If a feature adds process without saving time, skip it.
 6. **Private by default.** This is sensitive people data. Generate appropriate privacy guidelines and remind them.
-7. **No jargon in user-facing text.** They are a manager, not an infra person. Don't say "MCP server", "agent loop", "context window", "tool call" to them. Say "Claude integration", "I checked", "I read".
+7. **No jargon in user-facing text.** They are a manager, not an infra person. Don't say "MCP server", "agent loop", "context window", "tool call" to them. Say "agent integration", "I checked", "I read".
 8. **No em dashes anywhere.** Period or comma or rewrite. House style.
 9. **One source of truth per concept.** `/prep` owns prep content. `/health` owns the team snapshot. The dashboard and other commands read those outputs, they don't recompute. If two pieces of code generate the same kind of content, one of them is wrong.
+10. **Talk to the agent; the agent handles the files.** Every artifact the user reads should frame action as "tell your agent" rather than "edit this file" or "drop a file here." Direct edits stay as an aside, never the lede. The user types into a chat; the agent writes to disk.
 
 ---
 

@@ -89,7 +89,7 @@ To reconfigure an existing install (turn the dashboard on, add new commands, cha
 
 ## How it actually works
 
-Paperwork Setup is a Claude Code skill that lives as a single prompt (`PAPERWORK.md`) plus an MIT license. Your agent fetches that prompt, runs the interview, and generates files into the current directory. Everything after install is regular files. No background process, no SaaS, no telemetry.
+Paperwork Setup is a single prompt (`PAPERWORK.md`) plus an MIT license. Your agent fetches that prompt, runs the interview, and generates files into the current directory. Everything after install is regular files. No background process, no SaaS, no telemetry.
 
 The install marker at `.claude/paperwork-version` records the upstream SHA your instance was generated from. `/paperwork-update` reads that marker to compute the upgrade path the next time you run it.
 
